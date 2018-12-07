@@ -61,8 +61,8 @@ export default class Main extends React.Component{
 
     componentWillMount(){
         // Store.push('device',device);//测试用
-        // Store.save('AppId',null);
-        // Store.save('AppPassword',null);
+        Store.save('AppId',null);//测试用
+        Store.save('AppPassword',null);//测试用
         //获取本地保存的设备数据,保存的是数组，获取的也是数组
         Store.get('device').then((deviceList) => {
             console.log('设备列表：',deviceList)
@@ -160,10 +160,12 @@ export default class Main extends React.Component{
                 case GlobalConfig.globalSendIndex.getDeviceListIndex:
                     //接收到返回的信息就应该清除超时的定时器
                     this.sendTimer&& clearTimeout(this.sendTimer);
+                    this.RegLoginCustomModal.closeModal()
                     //获取绑定设备后就应该发送心跳信息，
                     let index = this.getIndex();
                     this.sendLink(TypeConvertUtil.toByteArray(GetCommand.getLinkCommand(index, GlobalConfig.globalAppId)));
                     if(retArray[retArray.length-1] ==='0.'){//暂时没有设备列表
+
                         this.setState({
                                 dialogLoadingVisible:false,
                             },()=>{
@@ -222,6 +224,20 @@ export default class Main extends React.Component{
                         },3000);
                         break;
                     case AppCommandIndex.login:
+                        this.sendCommand(AppCommandIndex.login,index,TypeConvertUtil.toByteArray(GetCommand.getLoginCommand(index,GlobalConfig.globalAppId,GlobalConfig.appPsw)))
+                        setTimeout(()=>{
+                            if(this.state.dialogLoadingVisible){//再次发送，还是没有返回则提示发送失败！
+                                this.setState({
+                                    dialogLoadingVisible:false,
+                                },()=>{
+                                    AlertTool.showOneBtnAlert("登录超时!",
+                                        ()=>{
+
+                                        },
+                                    )
+                                });
+                            }
+                        },3000);
                         break;
                     case AppCommandIndex.getDeviceList:
                         this.sendCommand(AppCommandIndex.getDeviceList,index,TypeConvertUtil.toByteArray(GetCommand.getDeviceListCommand(index,GlobalConfig.globalAppId)))
@@ -302,6 +318,8 @@ export default class Main extends React.Component{
                     break;
                 case AppCommandIndex.login:
                     GlobalConfig.globalSendIndex.loginIndex = currentSendIndex;
+                    //判断发送命令是否超时，
+                    this.onSureSendTimeout(this.getIndex(),AppCommandIndex.login);
                     break;
                 case AppCommandIndex.getDeviceList:
                     GlobalConfig.globalSendIndex.getDeviceListIndex = currentSendIndex;
@@ -314,6 +332,7 @@ export default class Main extends React.Component{
                         //判断发送命令是否超时，
                         this.onSureSendTimeout(this.getIndex(),AppCommandIndex.deviceCmd,deviceCmdString);
                     // }
+                    break;
 
             }
         })
@@ -477,7 +496,7 @@ export default class Main extends React.Component{
                     {title}
                 </Text>
 
-                {btn==='登录' && this.renderRegOrLoginItem('APPId:  ',GlobalConfig.globalAppId,null)}
+                {btn==='登录' && this.renderRegOrLoginItem('APPID:  ',GlobalConfig.globalAppId,null)}
                 {this.renderRegOrLoginItem('APP密码:','',(text)=>{GlobalConfig.appPsw = text})}
                 {btn==='注册' && <Text style={{width: GlobalConfig.screenWidth * 0.8,textAlign:'center',padding:WidthUtils.convert(10),fontSize:FontSizeUtils.convert(14),color:Colors.appThemeColor,backgroundColor:'white'}}>
                     您尚未注册,注册后方可登录使用,请在上面输入密码进行注册
@@ -524,9 +543,15 @@ export default class Main extends React.Component{
                                        })
                                     }else{
                                         //登录
-                                        let index =  this.getIndex();
-                                        this.sendCommand(AppCommandIndex.login,index,TypeConvertUtil.toByteArray(GetCommand.getLoginCommand(index,GlobalConfig.globalAppId,'1234')))
-                                    }
+                                        this.setState({
+                                            dialogLoadingVisible:true,
+                                            loadingText:'登录中...',
+                                        },()=>{
+                                            let index =  this.getIndex();
+                                            this.sendCommand(AppCommandIndex.login,index,TypeConvertUtil.toByteArray(GetCommand.getLoginCommand(index,GlobalConfig.globalAppId,GlobalConfig.appPsw)))
+
+                                        });
+                                     }
                                 }}/>
                 </View>
             </View>
