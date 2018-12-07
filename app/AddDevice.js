@@ -161,7 +161,7 @@ export default class AddDevice extends Component{
             if(this.state.dialogLoadingVisible){//表明发送的消息没有返回,需要再次发送
                 switch (mAppCommandIndex){
                     case AppCommandIndex.bindDevice:
-                        this.sendCommand(AppCommandIndex.bindDevice,index,GetCommand.getBindDeviceCommand(index,GlobalConfig.globalAppId,this.state.devicePhone));
+                        this.sendCommand(AppCommandIndex.bindDevice,index,GetCommand.getBindDeviceCommand(index,GlobalConfig.globalAppId,this.state.devicePhone,this.state.devicePwd));
                         setTimeout(()=>{
                             if(this.state.dialogLoadingVisible){//再次发送，还是没有返回则提示发送失败！
                                 this.setState({
@@ -240,7 +240,7 @@ export default class AddDevice extends Component{
                             //先绑定设备，获取到设备Id，在根据设备id设置设备名字，再本地保存
 
                             let index = this.getIndex();
-                            this.sendCommand(AppCommandIndex.bindDevice,index,GetCommand.getBindDeviceCommand(index,GlobalConfig.globalAppId,this.state.devicePhone));
+                            this.sendCommand(AppCommandIndex.bindDevice,index,GetCommand.getBindDeviceCommand(index,GlobalConfig.globalAppId,this.state.devicePhone,this.state.devicePwd));
                         }else{
                             AlertTool.showOneBtnAlert('设备密码只能是4位数字密码,请重新输入设备密码');
                         }

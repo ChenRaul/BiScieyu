@@ -18,8 +18,8 @@ export default class GetCommand{
         return index+','+AppCommandIndex.link+','+from+','+appId+',0.';
     }
     //绑定
-    static getBindDeviceCommand(index,appId,devicePhone){
-        return index+','+AppCommandIndex.bindDevice+','+from+','+appId+',0,'+devicePhone+'.';
+    static getBindDeviceCommand(index,appId,devicePhone,password){
+        return index+','+AppCommandIndex.bindDevice+','+from+','+appId+',0,'+password+devicePhone+'.';
     }
     //解除绑定
     static getUnbindDeviceCommand(index,appId,deviceId){

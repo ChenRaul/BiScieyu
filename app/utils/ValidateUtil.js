@@ -93,7 +93,7 @@ class ValidateUtil extends React.Component {
         if (null == value || value == '') {
             return false;
         } else {
-            var regu =  "^1(3|4|5|7|8)\\d{9}$";
+            var regu =  "^1(3|4|5|7|8)\\d{11}$";
             var reg = new RegExp(regu);
             return reg.test(value);
         }

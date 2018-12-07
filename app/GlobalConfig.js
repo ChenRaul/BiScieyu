@@ -4,23 +4,23 @@ const GlobalConfig = {
     screenWidth: Dimensions.get('window').width,
     screenHeight: Dimensions.get('window').height,
     screenDensity: PixelRatio.get(),
-    serverIp:'192.168.50.35',
+    serverIp:'192.168.3.5',
     serverPort:4000,
     alarmPort:3999,
     commandPort:Math.random() * 60536 | 0 + 5000,
 
-    //socket·¢ËÍµÄÐòÁÐºÅ¶ÔÓ¦µÄÃüÁî¹ØÏµ
+    //socketå‘é€çš„åºåˆ—å·å¯¹åº”çš„å‘½ä»¤å…³ç³»
     globalSendIndex:{
-        regIndex:0,//×¢²áÊ±·¢ËÍÃüÁîµÄindex
-        loginIndex:0,//µÇÂ¼Ê±·¢ËÍÃüÁîµÄindex
-        linkIndex:0,//ÐÄÌøÊ±·¢ËÍÃüÁîµÄindex
-        getDeviceListIndex:0,//»ñÈ¡Éè±¸ÁÐ±í·¢ËÍÃüÁîµÄindex
-        bindDeviceIndex:0,//°ó¶¨Éè±¸·¢ËÍÃüÁîµÄindex
-        deviceCmdIndex:0,//ÏòÉè±¸·¢ËÍÃüÁî×Ö·û´®µÄindex
-        //ÕâÑùÐ´¿ÉÒÔÇø·ÖÃ¿¸öÃüÁî£¬µ«ÊÇÓÉÓÚAPPÒ»´ÎÖ»ÄÜ·¢ËÍÒ»¸öÃüÁî£¬ËùÒÔ°ÑdeviceCmdIndexµ±×önumber
+        regIndex:0,//æ³¨å†Œæ—¶å‘é€å‘½ä»¤çš„index
+        loginIndex:0,//ç™»å½•æ—¶å‘é€å‘½ä»¤çš„index
+        linkIndex:0,//å¿ƒè·³æ—¶å‘é€å‘½ä»¤çš„index
+        getDeviceListIndex:0,//èŽ·å–è®¾å¤‡åˆ—è¡¨å‘é€å‘½ä»¤çš„index
+        bindDeviceIndex:0,//ç»‘å®šè®¾å¤‡å‘é€å‘½ä»¤çš„index
+        deviceCmdIndex:0,//å‘è®¾å¤‡å‘é€å‘½ä»¤å­—ç¬¦ä¸²çš„index
+        //è¿™æ ·å†™å¯ä»¥åŒºåˆ†æ¯ä¸ªå‘½ä»¤ï¼Œä½†æ˜¯ç”±äºŽAPPä¸€æ¬¡åªèƒ½å‘é€ä¸€ä¸ªå‘½ä»¤ï¼Œæ‰€ä»¥æŠŠdeviceCmdIndexå½“åšnumber
         // {
         //     getDeviceNameIndex:0,
-        //     deviceDeploymentIndex:0,//Éè±¸²¼·À
+        //     deviceDeploymentIndex:0,//è®¾å¤‡å¸ƒé˜²
         // }
     },
     globalAppId:null,

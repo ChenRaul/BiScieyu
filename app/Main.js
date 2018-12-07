@@ -19,6 +19,7 @@ import BorderText from "./common/BorderText";
 import Communications from "react-native-communications";
 import ParseResponseData from "./ParseResponseData";
 import TypeConvertUtil from "./TypeConvertUtil";
+import NotifService from "./NotifService";
 let initIndex=0;
 const firstLevelCommand=['#1','#2'];
 let device = {deviceName:'设备1',
@@ -46,11 +47,22 @@ export default class Main extends React.Component{
             regOrLoginBtn:'',
             sendDeviceCmd:'',
         };
+        this.notif = new NotifService(this.onRegister.bind(this), this.onNotif.bind(this));
     }
+    onNotif(notif) {
+        console.log(notif);
+        // Alert.alert(notif.title, notif.message);
+    }
+    onRegister(token) {
+        Alert.alert("Registered !", JSON.stringify(token));
+        console.log(token);
+        this.setState({ registerToken: token.token, gcmRegistered: true });
+    }
+
     componentWillMount(){
-        Store.push('device',device);//测试用
-        Store.save('AppId',null);
-        Store.save('AppPassword',null);
+        // Store.push('device',device);//测试用
+        // Store.save('AppId',null);
+        // Store.save('AppPassword',null);
         //获取本地保存的设备数据,保存的是数组，获取的也是数组
         Store.get('device').then((deviceList) => {
             console.log('设备列表：',deviceList)
@@ -339,23 +351,74 @@ export default class Main extends React.Component{
         GlobalConfig.globalAlartSocket.on('message',(data, rinfo)=> {
             let retStr =TypeConvertUtil.byteToString(data);
             let retArray=retStr.split(',');
-            console.log('alarmSocket接收到的命令：',retArray);
+
             console.log('GlobalConfig.globalSendIndex:',GlobalConfig.globalSendIndex);
             // DeviceEventEmitter.emit('commandSocketReceiveMsg',retStr);
             //报警socekt根据返回的字符串第二个来决定是心跳还是报警，心跳返回的是8，
-            switch (retArray[1]){
-                case 3://心跳返回,会面会修改为8
+            // switch (retArray[1]){
+            //     case 3://心跳返回,会面会修改为8
+            //         if(retArray[0] === GlobalConfig.globalSendIndex.linkIndex && retArray[retArray.length-1] ==='1.'){//心跳返回成功
+            //             console.log('心跳返回成功');
+            //         }
+            //     case
+            //         break;
+            // }
+            if(retArray[1] === '3'){//心跳返回,会面会修改为8
                     if(retArray[0] === GlobalConfig.globalSendIndex.linkIndex && retArray[retArray.length-1] ==='1.'){//心跳返回成功
                         console.log('心跳返回成功');
+                    }else{
+                        console.log('心跳返回失败');
                     }
+            }else{
+                //接收到的报警
+                let response = ParseResponseData.parseIsSuccess(retArray);
+                console.log('alarmSocket接收到的命令：',response);
+                let device = this.state.deviceList.find((item)=>{
+                    return item.deviceId === response.deviceId
+                });
+                if(device){
+                    this.notif.localNotif(this.getAlarmType(Number.parseInt(response.commandIndex))+'报警',
+                        '手机号：'+device.devicePhone+'的设备发生'+this.getAlarmType(Number.parseInt(response.commandIndex))+'报警!'
+                    )
+                }
 
-                    break;
             }
-
 
         })
     }
 
+    getAlarmType(type){
+        let str ='';
+        switch (type) {
+            case AppCommandIndex.alarmMC:
+                str = '门磁';
+                break;
+            case AppCommandIndex.alarmHW:
+                str = '红外';
+                break;
+            case AppCommandIndex.alarmHWCNT:
+                str = '红外计数器';
+                break;
+            case AppCommandIndex.alarmYG:
+                str = '烟感';
+                break;
+            case AppCommandIndex.alarmSJFDQ:
+                str = '手机防盗器';
+                break;
+            case AppCommandIndex.alarmDD:
+                str = '断电';
+                break;
+            case AppCommandIndex.alarmYBQ:
+                str = '迎宾器';
+                break;
+            case AppCommandIndex.alarmML:
+                str = '门铃';
+                break;
+            case AppCommandIndex.alarmCAll:
+                str = '老人呼叫';
+                break;
+        }
+    }
 
     /***
      * 点击设备时的动画，以及打开设备选择列表
